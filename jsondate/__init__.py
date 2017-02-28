@@ -3,6 +3,7 @@ import json
 
 DATE_FMT = '%Y-%m-%d'
 ISO8601_FMT = '%Y-%m-%dT%H:%M:%SZ'
+JAVASCRIPT_FMT = 'datetime.datetime(%Y, %m, %d, %H, %M, %S)'
 
 
 def _datetime_encoder(obj):
@@ -31,7 +32,12 @@ def _datetime_decoder(dict_):
                 date_obj = datetime.datetime.strptime(value, DATE_FMT)
                 dict_[key] = date_obj.date()
             except (ValueError, TypeError):
-                continue
+                try:
+                    datetime_obj = datetime.datetime.strptime(value, JAVASCRIPT_FMT)
+                    # print ">>> %s: %s <<<" % (type(datetime_obj), datetime_obj)
+                    dict_[key] = datetime_obj
+                except (ValueError, TypeError):
+                    continue
 
     return dict_
 
